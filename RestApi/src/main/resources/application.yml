@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+keycloak:
+  auth-server-url: http://keycloak:80/auth
+  realm: watchtower
+  resource: SpringBoot_KeyCloak
+  public-client: true
+  bearer-only: true
+  use-resource-role-mappings: true
+
+

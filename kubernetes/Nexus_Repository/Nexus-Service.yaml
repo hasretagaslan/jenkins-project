@@ -1,0 +1,22 @@
+##################################################
+# Sonatype Nexus Service
+##################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-service
+  namespace: nexus
+spec:
+  selector: 
+    app: nexus
+  type: LoadBalancer
+  ports: 
+    - name: nexus
+      port: 8081
+      targetPort: 8081
+    - name: repo
+      port: 8083
+      targetPort: 8083
+  
+  
+   

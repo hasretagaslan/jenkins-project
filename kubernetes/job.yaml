@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-import
+spec:
+  template:
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        command: ["mongoimport"]
+        args:
+        - "--uri=mongodb://mongo"
+        - "--collection=test"
+        - "--db=my-database"
+        - "--jsonArray"
+        - "--file=home/test1.json"
+        envFrom:
+        - configMapRef:
+            name: test-config
+        volumeMounts:
+        - name: config-volume
+          mountPath: /home
+      volumes:
+      - name: config-volume
+        configMap:
+          name: test-config
+      restartPolicy: Never
+  backoffLimit: 4
+

@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/hasretagaslan/devops.git'
+            }
+        }
+        stage('Create Jar Files') {
+            steps {
+                sh 'cd ./devops/RestApi && mvn clean install'
+            }
+        }
+        stage('Docker Image Build') {
+            steps {
+                sh 'docker build -t localhost:42000/house:0.0.1 -f ./devops/RestApi/Dockerfile .'
+            }
+        }
+        stage('Docker push Nexus') {
+            steps {
+                sh 'docker login localhost:42000 -u admin -p password'
+                sh 'docker push localhost:42000/house:0.0.1'
+            }
+        }
+        stage('Change House Version') {
+            steps {
+                sh "sed -i 's/oldVersion/newVersion/' repoAddress/house.yaml"
+                sh "git add ."
+                sh "git commit -m 'change verwsion by Jenkins'"
+                sh "git push origin master"
+            }
+        }
+        stage('Deploy new Version') {
+            steps {
+                sh "kubectl apply -f repoAddress/house.yaml"
+            }
+        }
+    }
+}

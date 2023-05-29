@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: house
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: house
+  template:
+    metadata:
+      labels:
+        app: house
+    spec:
+      imagePullSecrets:
+        - name: my-nexus-creds
+      containers:
+        - name: app
+          image: localhost:48678/house:1.1.1
+          ports:
+            - containerPort: 8080
+          
+          env:
+            - name: MONGODB_HOST
+              value: mongo
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_DATABASE
+              value: test
+            - name: MONGODB_COLLECTION
+              value: test
+              value: watchtower
+              value: SpringBoot_KeyCloak
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: house
+spec:
+  selector:
+    app: house
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: LoadBalancer
