@@ -4,30 +4,31 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/hasretagaslan/devops.git'
+                git 'https://github.com/hasretagaslan/jenkins-project.git'
             }
         }
         stage('Create Jar Files') {
             steps {
-                sh 'cd ./devops/RestApi && mvn clean install'
+                sh 'cd ./RestApi && mvn clean install'
             }
         }
         stage('Docker Image Build') {
             steps {
-                sh 'docker build -t localhost:42000/house:0.0.1 -f ./devops/RestApi/Dockerfile .'
+                sh 'docker build -t house:0.0.1 -f ./RestApi/Dockerfile .'
             }
         }
         stage('Docker push Nexus') {
             steps {
-                sh 'docker login localhost:42000 -u admin -p password'
-                sh 'docker push localhost:42000/house:0.0.1'
+                sh 'docker login localhost:31551 -u admin -p admin'
+                sh 'docker tag house localhost:31551/house:0.0.1'
+                sh 'docker push localhost:31551/house:0.0.1'
             }
         }
         stage('Change House Version') {
             steps {
                 sh "sed -i 's/oldVersion/newVersion/' repoAddress/house.yaml"
                 sh "git add ."
-                sh "git commit -m 'change verwsion by Jenkins'"
+                sh "git commit -m 'change version by Jenkins'"
                 sh "git push origin master"
             }
         }
