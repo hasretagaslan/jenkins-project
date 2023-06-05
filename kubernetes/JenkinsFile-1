@@ -9,16 +9,17 @@ pipeline {
         }
         stage('Create Jar Files') {
             steps {
-                sh 'cd ./RestApi && mvn clean package'
+                sh 'mvn clean package'
             }
         }
         stage('SonarQube analysis') {
             steps {
            withSonarQubeEnv(Sonarqube-10.0) { // You can override the credential to be used
                 sh 'mvn sonar:sonar'
+           }
+           } 
+        }
     }
-  }
-  }
 }
-}
+
 
