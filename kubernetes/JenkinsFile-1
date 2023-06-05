@@ -1,8 +1,6 @@
 pipeline {
     agent any
-    environment {
-        PATH = "$PATH:/usr/share/maven/"
-    }
+
     stages {
         stage('Clone') {
             steps {
@@ -16,7 +14,7 @@ pipeline {
         }
         stage('SonarQube analysis') {
             steps {
-           withSonarQubeEnv(credentialsId: 'squ_bb9525d5cb153eac830c50a0d733c0128494e107', installationName: 'sonarScanner') { // You can override the credential to be used
+           withSonarQubeEnv(Sonarqube-10.0) { // You can override the credential to be used
                 sh 'mvn sonar:sonar'
     }
   }
