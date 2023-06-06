@@ -4,16 +4,22 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'localhost:31551'
         DOCKER_IMAGE_NAME = 'house'
-        DOCKER_IMAGE_TAG = "0.0." + "$env.BUILD_NUMBER"
+        DOCKER_IMAGE_TAG = "${DOCKER_IMAGE_NAME}: "0.0." + "$env.BUILD_NUMBER"
         NEXUS_REPOSITORY = 'localhost:31551'
     }
     
     stages  {
         stage('Clone') {
             steps {
-                git 'https://github.com/hasretagaslan/jenkins-project.git'
+                git  branch: 'main', credentialsId: 'sonar-test', url: 'https://github.com/hasretagaslan/jenkins-project.git'
             }
         }
+        stage('SonarQube analysis') {
+            steps {
+           withSonarQubeEnv(Sonarqube-10.0) { // You can override the credential to be used
+                sh 'mvn sonar:sonar'
+           }
+           } 
 
         stage('Create Jar Files') {
             steps {
