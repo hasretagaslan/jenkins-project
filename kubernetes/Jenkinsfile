@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'localhost:31551'
         DOCKER_IMAGE_NAME = 'house'
-        DOCKER_IMAGE_TAG = "${DOCKER_IMAGE_NAME}: "0.0." + "${env.BUILD_NUMBER}"
+        DOCKER_IMAGE_TAG = "0.0." + "${env.BUILD_NUMBER}"
         NEXUS_REPOSITORY = 'localhost:31551'
     }
     
@@ -28,7 +28,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE_TAG} -f ./RestApi/Dockerfile ."
+                sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ./RestApi/Dockerfile ."
             }
         }
 
