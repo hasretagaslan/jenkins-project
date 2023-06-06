@@ -1,12 +1,12 @@
-minikube start --extra-config=apiserver.service-node-port-range=1-65535 --driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost --kubernetes-version=v1.21.2
+# minikube start --extra-config=apiserver.service-node-port-range=1-65535 --driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost --kubernetes-version=v1.21.2
 
-cp /root/.kube/config /home/hasret/.kube/
-cp -r /root/.minikube /home/hasret/
+# cp /root/.kube/config /home/hasret/.kube/
+# cp -r /root/.minikube /home/hasret/
 
-sed -i 's/root/home\/hasret/' /home/hasret/.kube/config
+# sed -i 's/root/home\/hasret/' /home/hasret/.kube/config
 
-chmod -R 777 /home/hasret/.kube
-chmod -R 777 /home/hasret/.minikube
+# chmod -R 777 /home/hasret/.kube
+# chmod -R 777 /home/hasret/.minikube
 
 kubectl apply -f postgres.yml 
 kubectl apply -f keycloak.yaml 

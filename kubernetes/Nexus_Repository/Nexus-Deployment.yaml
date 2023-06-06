@@ -21,18 +21,13 @@ spec:
       containers:
         - name: nexus
           image: sonatype/nexus3:3.38.0
-          env:
-          - name: MAX_HEAP
-            value: "1000m"
-          - name: MIN_HEAP
-            value: "500m"
           resources:
-            limits:
-              memory: "4Gi"
-              cpu: "1000m"
             requests:
-              memory: "2Gi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "3Gi"
+              cpu: "2"
           ports:
             - containerPort: 8081
             - containerPort: 8083

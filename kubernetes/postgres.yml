@@ -15,6 +15,10 @@ spec:
       containers:
         - name: postgresql
           image: postgres
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
           ports:
             - containerPort: 5432
           env:
@@ -26,7 +30,7 @@ spec:
               value: keycloak
           volumeMounts:
           - name: postgres-data
-            mountPath: /var/lib/postgresql/data
+            mountPath: /var/lib/postgresql/
       volumes:
       - name: postgres-data
         persistentVolumeClaim:
@@ -71,5 +75,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /mnt/postgres
-
 
