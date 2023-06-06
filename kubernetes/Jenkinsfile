@@ -20,19 +20,19 @@ pipeline {
                 sh 'cd ./RestApi && mvn clean package'
             }
         }
-        // stage('SonarQube analysis') {
-        //     steps {
-        //         withSonarQubeEnv('Sonarqube-10.0') { // You can override the credential to be used
-        //             sh '''
-        //                 cd ./RestApi && mvn clean verify sonar:sonar \
-        //                 -Dsonar.projectKey=maven-jenkins-pipeline \
-        //                 -Dsonar.projectName='maven-jenkins-pipeline' \
-        //                 -Dsonar.host.url=http://192.168.1.10:9000 \
-        //                 -Dsonar.token=sqp_bacb57c2890f57297eeac3d8efd32f4daac06fde
-        //             '''
-        //         }
-        //    } 
-        // }
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('Sonarqube-10.0') { // You can override the credential to be used
+                    sh '''
+                        cd ./RestApi && mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=maven-jenkins-pipeline \
+                        -Dsonar.projectName='maven-jenkins-pipeline' \
+                        -Dsonar.host.url=http://192.168.1.10:9000 \
+                        -Dsonar.token=sqp_bacb57c2890f57297eeac3d8efd32f4daac06fde
+                    '''
+                }
+           } 
+        }
         stage('Build Docker Image') {
             steps {
                 sh "cd ./RestApi && docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f DockerFile ."

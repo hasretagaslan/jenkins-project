@@ -16,7 +16,7 @@ spec:
         - name: my-nexus-creds
       containers:
         - name: app
-          image: localhost:48678/house:0.0.21
+          image: localhost:32473/house:0.0.21
           resources:
             limits:
               cpu: "0.5"
