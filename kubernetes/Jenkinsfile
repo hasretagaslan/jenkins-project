@@ -11,16 +11,16 @@ pipeline {
     stages  {
         stage('Clone') {
             steps {
-                git  branch: 'main', credentialsId: 'sonar-test', url: 'https://github.com/hasretagaslan/jenkins-project.git'
+                git branch: 'main', credentialsId: 'sonar-test', url: 'https://github.com/hasretagaslan/jenkins-project.git'
             }
         }
         stage('SonarQube analysis') {
             steps {
-           withSonarQubeEnv(Sonarqube-10.0) { // You can override the credential to be used
-                sh 'mvn sonar:sonar'
-           }
+                withSonarQubeEnv( installationName: 'Sonarqube-10.0') { // You can override the credential to be used
+                    sh './mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
+            }
            } 
-
+        }
         stage('Create Jar Files') {
             steps {
                 sh 'cd ./RestApi && mvn clean package'
@@ -52,7 +52,6 @@ pipeline {
             }
         }
     
-    }  
+    }
 
-    
-}
+ }
