@@ -1,6 +1,8 @@
 pipeline {
     agent any
-    
+    tools {
+        maven "maven-version"
+    }
     environment {
         DOCKER_REGISTRY = 'localhost:31551'
         DOCKER_IMAGE_NAME = 'house'
@@ -14,29 +16,34 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/hasretagaslan/jenkins-project.git'
             }
         }
-        stage('SonarQube analysis') {
-            steps {
-                withSonarQubeEnv( installationName: 'Sonarqube-10.0') { // You can override the credential to be used
-                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
-            }
-           } 
-        }
         stage('Create Jar Files') {
             steps {
                 sh 'cd ./RestApi && mvn clean package'
             }
         }
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('Sonarqube-10.0') { // You can override the credential to be used
+                    sh '''
+                        cd ./RestApi && mvn clean verify sonar:sonar \
+                        -Dsonar.projectKey=maven-jenkins-pipeline \
+                        -Dsonar.projectName='maven-jenkins-pipeline' \
+                        -Dsonar.host.url=http://192.168.1.10:9000 \
+                        -Dsonar.token=sqp_bacb57c2890f57297eeac3d8efd32f4daac06fde
+                    '''
+                }
+           } 
+        }
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ./RestApi/Dockerfile ."
+                sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ./RestApi/DockerFile ."
             }
         }
-
         stage('Push Docker Image to Nexus Repository') {
             steps {
-                sh "docker login -u admin-p admin ${DOCKER_REGISTRY}"
-                sh "docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG} ${NEXUS_REPOSITORY}/${DOCKER_IMAGE_TAG}"
-                sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_TAG}"
+                sh "docker login ${DOCKER_REGISTRY} -u admin-p admin"
+                sh "docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${NEXUS_REPOSITORY}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                sh "docker push ${NEXUS_REPOSITORY}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
             }
         }
         stage('Change House Version') {
