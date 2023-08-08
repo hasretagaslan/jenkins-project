@@ -11,8 +11,7 @@ on:
     types:
       - closed
     branches:
-      - master
-      - dev
+      - main
   push:
     branches:
       - master
