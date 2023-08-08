@@ -41,7 +41,7 @@ jobs:
           
           echo $NEW_VERSION > version.txt
         env:
-          GITHUB_TOKEN: ${{ secrets.GALAKSIYA }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update POM version
         run: |
@@ -51,7 +51,7 @@ jobs:
           # Update the pom file with the new version
           mvn -f api/pom.xml versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false
         env:
-          GITHUB_TOKEN: ${{ secrets.GALAKSIYA }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Github Packages
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login -u USERNAME --password-stdin docker.pkg.github.com
@@ -118,6 +118,19 @@ jobs:
           asset_name: api:${{ steps.create_release.outputs.release_id }}.zip
           asset_content_type: application/zip
 
-     
-      
+      - name: Commit Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "emredeniz@galaksiya.com"
+          git config --local user.name "Deepin DevOps"
+          git commit -a -m "Updated version number [skip ci]"
+          git push
+
+      - name: Helmchart Triggered
+        run: |
+          curl -X POST https://api.github.com/repos/deepin-market/helmcharts/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.REPOSITORIES_ACCESS_TOKEN }} \
+          --data '{"event_type": "Deploy by API [ ${{ github.ref_name }} ]", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'", "environment": "[ ${{ github.ref_name }} ]" }}'
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
